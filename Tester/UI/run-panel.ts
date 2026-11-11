@@ -46,7 +46,7 @@ const active = (state: RunState): boolean => state === "Running" || state === "M
 
 export class RunPanel {
   readonly el: HTMLElement;
-  private readonly debugChk = h("input", { type: "checkbox", id: "debug-run" });
+  private readonly debugChk = h("input", { type: "checkbox", id: "debug-run", role: "switch" });
   private readonly runBtn = h("button", { type: "button", class: "btn btn-primary" }, "Run");
   private readonly stopBtn = h("button", { type: "button", class: "btn" }, "Stop");
   private readonly statusText = h("span", { class: "run-status" });
@@ -72,9 +72,9 @@ export class RunPanel {
         { class: "toggle", for: "debug-run" },
         h(
           "span",
-          {},
+          { class: "toggle-text" },
           h("b", {}, "Debug run"),
-          h("span", { class: "muted" }, " · records snapshot() calls, time not measured"),
+          h("span", { class: "muted" }, "Records snapshot() calls; time not measured"),
         ),
         this.debugChk,
       ),
