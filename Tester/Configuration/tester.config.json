@@ -1,0 +1,7 @@
+{
+  "cutoffSeconds": 15,
+  "timedCutoffSeconds": 600,
+  "solverMaxMemoryMB": 512,
+  "snapshotHead": 200,
+  "snapshotTail": 800
+}

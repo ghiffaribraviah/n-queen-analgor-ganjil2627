@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // Sets the theme before the first paint, so a visitor who chose light does not see a dark flash. Keep the key in
+      // step with THEME_KEY in Tester/UI/theme.ts.
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("nq-theme") === "light" ? "light" : "dark";
+      } catch (e) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <title>N-Queen Tester</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234a8527'/%3E%3Cpath d='M22 74 L15 34 L33 50 L50 22 L67 50 L85 34 L78 74 Z M20 80 H80 V88 H20 Z' fill='%23fff'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/driver/main.ts"></script>
+  </body>
+</html>
