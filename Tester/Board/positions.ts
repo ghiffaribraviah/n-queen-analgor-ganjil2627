@@ -1,12 +1,12 @@
 // Blocked cells of the Holes and Walled cases as a list of (row, column) positions, 0-based.
-// The list is the single source of truth: Place fills it from (N, K, seed), the user may type it, and the grid given
+// The list is the single source of truth: Place fills it from (N, H or W, seed), the user may type it, and the grid given
 // to the solver is derived from it.
 import { MAX_N, MIN_N, randomSolution } from "./preplaced";
 import { mulberry32, randInt } from "./rng";
 import { CELL_FREE } from "./terrain";
 
 export type Position = readonly [number, number];
-export type BlockedKind = "hole" | "pawn";
+export type BlockedKind = "hole" | "wall";
 
 /** Most blocked cells a board accepts. A guaranteed-solvable Holes board keeps N cells for the planted queens. */
 export const maxBlocked = (
@@ -93,13 +93,13 @@ export function gridPositions(
 }
 
 /**
- * K blocked cells drawn uniformly from the seed, sorted row by row. With `solvable` (holes only) a random solution is
- * planted first and kept free, so the board always has at least one solution. Pawns use the same draw as before, so
- * existing (N, K, seed) boards stay the same.
+ * `count` blocked cells drawn uniformly from the seed, sorted row by row. With `solvable` (holes only) a random solution is
+ * planted first and kept free, so the board always has at least one solution. Walls use the same draw as before, so
+ * existing (N, count, seed) boards stay the same.
  */
 export function generateBlocked(
   n: number,
-  k: number,
+  count: number,
   seed: number,
   kind: BlockedKind,
   opts: { solvable?: boolean } = {},
@@ -108,8 +108,8 @@ export function generateBlocked(
     throw new RangeError(`N must be an integer in [${MIN_N}, ${MAX_N}]`);
   const solvable = kind === "hole" && opts.solvable === true;
   const limit = maxBlocked(n, kind, solvable);
-  if (!Number.isInteger(k) || k < 0 || k > limit)
-    throw new RangeError(`K must be an integer in [0, ${limit}]`);
+  if (!Number.isInteger(count) || count < 0 || count > limit)
+    throw new RangeError(`${kind === "hole" ? "H" : "W"} must be an integer in [0, ${limit}]`);
   if (!Number.isInteger(seed) || seed < 0)
     throw new RangeError("Seed must be a non-negative integer");
 
@@ -124,7 +124,7 @@ export function generateBlocked(
     [cells[i], cells[j]] = [cells[j]!, cells[i]!];
   }
   return cells
-    .slice(0, k)
+    .slice(0, count)
     .sort((a, b) => a - b)
     .map((i) => [Math.floor(i / n), i % n] as [number, number]);
 }

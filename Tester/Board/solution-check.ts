@@ -28,14 +28,14 @@ export function firstInvalid(
   ctx: CheckContext,
 ): InvalidSolution | undefined {
   const index =
-    set.kind === "cols" && !ctx.terrain?.some((row) => row.includes("P"))
+    set.kind === "cols" && !ctx.terrain?.some((row) => row.includes("W"))
       ? firstInvalidColumn(set, ctx)
       : firstInvalidCells(set, ctx);
   if (index === undefined) return undefined;
   return explain(set, index, ctx);
 }
 
-/** Fast path: one queen per row, no pawns. Stamps avoid clearing the diagonal tables for every solution. */
+/** Fast path: one queen per row, no walls. Stamps avoid clearing the diagonal tables for every solution. */
 function firstInvalidColumn(set: SolutionSet, ctx: CheckContext): number | undefined {
   const { n, count, data } = set;
   const fixed = new Int16Array(n).fill(-1);

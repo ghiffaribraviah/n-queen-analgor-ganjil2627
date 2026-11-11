@@ -30,7 +30,7 @@ export interface ProblemInput {
   n: number;
   /** Queens already on the board, as (row, column). */
   preplaced: Array<[number, number]>;
-  /** N strings of '.', 'H' (hole) or 'P' (pawn). Left out on Normal and Pre-placed boards. */
+  /** N strings of '.', 'H' (hole) or 'W' (wall). Left out on Normal and Pre-placed boards. */
   terrain?: readonly string[];
 }
 

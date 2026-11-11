@@ -47,9 +47,9 @@ The window has three zones: the configuration on the left, the board and its nav
 - **Problem**: the case, chosen with four buttons (see [Problem cases](#problem-cases)). The **?** next to the title explains the case.
 - **N**: board size, 4 to 12, typed or stepped with the minus and plus buttons.
 - **P** (Pre-placed): the number of locked queens, 0 to N-1. They are drawn from the seed.
-- **K** and **Positions** (Holes and Walled): the blocked cells. See [Holes and pawns](#holes-and-pawns).
-- **Seed**: Pre-placed queens, holes and pawns come from a seeded PRNG, so a board can be reproduced from (N, P, seed) or (N, K, seed). The die button picks a random seed.
-- **Apply changes**: nothing in the boxes above changes the board until this is pressed (choosing a case is the exception: it applies at once). If the text of the positions was edited, that text is the board, and K and the seed are ignored; otherwise the board is drawn again from N (Normal), N, P and the seed (Pre-placed), or N, K and the seed (Holes, Walled).
+- **H** (Holes) or **W** (Walled) and **Positions**: the blocked cells, as many as H or W says. See [Holes and walls](#holes-and-walls).
+- **Seed**: Pre-placed queens, holes and walls come from a seeded PRNG, so a board can be reproduced from (N, P, seed), (N, H, seed) or (N, W, seed). The die button picks a random seed.
+- **Apply changes**: nothing in the boxes above changes the board until this is pressed (choosing a case is the exception: it applies at once). If the text of the positions was edited, that text is the board, and H, W and the seed are ignored; otherwise the board is drawn again from N (Normal), N, P and the seed (Pre-placed), N, H and the seed (Holes), or N, W and the seed (Walled).
 
 **Run controls** (top of the right column)
 
@@ -57,7 +57,7 @@ The window has three zones: the configuration on the left, the board and its nav
 - **Run** runs the solver on the board: a first run, whose result is shown at once, and seven timed runs after it that measure time and memory. See [Time, memory and the cutoff](#time-memory-and-the-cutoff).
 - **Stop** cancels the run, also while the timed runs go on, and returns to Ready with no result. While a run goes on, every other control is off, so that the board cannot be changed under it.
 
-**The board** (middle): the queens of the shown solution. The numbers of the rows and columns are in a gutter above and to the left of the board; the cell under the pointer is lit and its numbers light up. Queens that attack each other are painted in the conflict colour. Solver queens are black, preplaced queens are blue with a gold padlock, pawns are wooden pieces, and holes are recessed cells with a cross.
+**The board** (middle): the queens of the shown solution. The numbers of the rows and columns are in a gutter above and to the left of the board; the cell under the pointer is lit and its numbers light up. Queens that attack each other are painted in the conflict colour. Solver queens are black, preplaced queens are blue with a gold padlock, walls are drawn as wooden pawns, and holes are recessed cells with a cross.
 
 **Browsing a result** (under the board): the result is shown as soon as the first run is done, while the timed runs still go on. A switch picks what to look at:
 
@@ -77,17 +77,17 @@ Inside a list: first, previous, next and last, a slider, and **Go to**. The arro
 | Normal | Every arrangement of N queens | None | - | Exactly 1 |
 | Pre-placed | Every arrangement of N queens that keeps the P locked ones | None, but P queens are locked in place | - | Exactly 1 |
 | Holes | Every arrangement of N queens | Holes (pale, with a cross) | Yes | Exactly 1 |
-| Walled | Every board with as many queens as possible | Pawns | No | Any, because a pawn splits its row into separate segments |
+| Walled | Every board with as many queens as possible | Walls (drawn as pawns) | No | Any, because a wall splits its row into separate segments |
 
-A solver returns **all** solutions. A pawn only stops an attack if it lies on the line between two queens. A diagonal that passes the corner between two pawns is not blocked. Pawns never attack.
+A solver returns **all** solutions. A wall only stops an attack if it lies on the line between two queens. A diagonal that passes the corner between two walls is not blocked. Walls never attack.
 
-### Holes and pawns
+### Holes and walls
 
-Holes and pawns are both a list of positions, `(row, column)` and 0-based. The list is the single source of truth for the board:
+Holes and walls are both a list of positions, `(row, column)` and 0-based. The list is the single source of truth for the board:
 
-- **Apply changes** draws K positions from (N, K, seed) and fills the Positions box with them.
+- **Apply changes** draws H (Holes) or W (Walled) positions from (N, H or W, seed) and fills the Positions box with them.
 - You can type the positions instead, as `0,3; 2,5; 4,1`, one pair per line, or `(0,3) (2,5)`. If the text was edited, **Apply changes** reads it and makes it the board. A position outside the board, or text that cannot be read, is reported with its place in the text; repeated positions are ignored. A board made this way is labelled "typed positions" and the seed does not describe it.
-- Holes drawn from K and a seed always have a solution. K is then at most N*N-N. Typed holes are run as they are, so a board can have no solution, and then the right answer is an empty list.
+- Holes drawn from H and a seed always have a solution. H is then at most N*N-N. Typed holes are run as they are, so a board can have no solution, and then the right answer is an empty list.
 - Walled: every draw is a valid problem, because the goal is the maximum number of queens.
 
 ## Result statuses
@@ -98,7 +98,7 @@ Holes and pawns are both a list of positions, `(row, column)` and 0-based. The l
 | Suboptimal | Walled: the boards are valid, but they hold fewer queens than the maximum. Only reported when there is a reference solver to say what the maximum is |
 | Incomplete | Fewer solutions returned than there are. Only reported when there is a reference solver to say how many there are |
 | Failed | The compute time of the first run exceeded the cutoff. The worker is terminated |
-| Invalid Solution | A returned solution breaks a rule: queen count, shared column or diagonal (or row, on Walled), a preplaced queen that was moved, a queen on a hole or pawn, a result of the wrong shape, or the same solution twice. Shows the rule, the board and the marked cells |
+| Invalid Solution | A returned solution breaks a rule: queen count, shared column or diagonal (or row, on Walled), a preplaced queen that was moved, a queen on a hole or wall, a result of the wrong shape, or the same solution twice. Shows the rule, the board and the marked cells |
 | Execution Error | A WASM trap (out of memory, stack overflow, `abort()`), `exit()`, module load failure, or a solver that does not define the function for the case. Shows the message and the top of the stack |
 | Cancelled | You pressed Stop. The app goes back to Ready with no result |
 
@@ -112,7 +112,7 @@ A **result of the wrong shape** is a solution that does not have exactly N entri
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Solutions | 2 | 10 | 4 | 40 | 92 | 352 | 724 | 2,680 | 14,200 |
 
-For the other cases there is no table: the count depends on the board. Check your solver on the Normal case first, and with P = 0 on Pre-placed and K = 0 on Holes and Walled, where the answers must be the Normal ones (on Walled with no pawns, the boards are the Normal solutions).
+For the other cases there is no table: the count depends on the board. Check your solver on the Normal case first, and with P = 0 on Pre-placed, H = 0 on Holes and W = 0 on Walled, where the answers must be the Normal ones (on Walled with no walls, the boards are the Normal solutions).
 
 ## Snapshots and Debug runs
 
@@ -127,7 +127,7 @@ snapshot(queens, "row " + std::to_string(r));           // the label can be a st
 - In a normal run `snapshot()` does nothing, and `NQ_SNAPSHOT` does not even evaluate its argument, so neither changes the result or the time.
 - In a **Debug run** every call is recorded. A search can call it millions of times, so only the first `snapshotHead` (200) and the last `snapshotTail` (800) are kept, and the rest is only counted. Snapshots are sent to the page while the solver runs (the first at once, then at most every 50 ms), so a solver stopped at the cutoff, or one that crashes, still shows its last snapshots. The calls made in the last moments before it got stuck can be missing.
 - A Debug run still checks the result and gives the status, but it runs only once and **its time and memory are not measured**, because recording takes time and memory. Snapshots, under the board, replays them with Play.
-- A queen off the board, or two queens on one cell, make a snapshot "malformed"; a queen on a hole or pawn is the solver's mistake. The note under the navigator says so. Neither stops the run.
+- A queen off the board, or two queens on one cell, make a snapshot "malformed"; a queen on a hole or wall is the solver's mistake. The note under the navigator says so. Neither stops the run.
 - `nq::queensOf` turns a `std::vector<int>` (one column per row) or a `std::vector<std::string>` (cells with `'Q'`) into the list `snapshot` takes.
 
 ## Time, memory and the cutoff
@@ -203,7 +203,7 @@ std::vector<std::vector<int>> solveNQueens(int n);
 std::vector<std::vector<int>> solvePreplaced(int n, const std::vector<std::pair<int, int>>& preplaced);
 // Holes: grid[r][c] is '.' (free) or 'H' (hole)
 std::vector<std::vector<int>> solveHoles(int n, const std::vector<std::string>& grid);
-// Walled: grid[r][c] is '.' (free) or 'P' (pawn). Every board with the most queens, as (row, column) lists
+// Walled: grid[r][c] is '.' (free) or 'W' (wall, drawn as a pawn). Every board with the most queens, as (row, column) lists
 std::vector<std::vector<std::pair<int, int>>> solveWalled(int n, const std::vector<std::string>& grid);
 ```
 
@@ -211,6 +211,7 @@ std::vector<std::vector<std::pair<int, int>>> solveWalled(int n, const std::vect
 - A solution of Normal, Pre-placed and Holes is a `std::vector<int>` of exactly N entries: the column of the queen in each row. It lists all N rows, preplaced ones included. A board without a solution is answered with an empty list.
 - A Walled board lists its queens in any order. On Walled you return **every board with the largest number of queens**; boards with fewer queens than the best one you return are ignored.
 - Return each solution once. A repeated solution is an Invalid Solution.
+- A wall on a Walled board is `'W'`. Earlier versions of this tester marked it with `'P'`: a Walled solver written for those must compare with `'W'` now, or it sees no walls and its answer is rejected.
 - A solver that does not define the function of the selected case ends as Execution Error, with the signature that was expected.
 
 ### Rules

@@ -14,7 +14,7 @@ export interface QueenCell {
 export interface BlockedCell {
   row: number;
   col: number;
-  kind: "hole" | "pawn";
+  kind: "hole" | "wall";
 }
 
 export interface RenderState {
@@ -258,7 +258,7 @@ export class BoardRenderer {
     ctx.save();
     ctx.translate(gutter, gutter);
     for (const b of this.state.blocked ?? [])
-      if (b.kind === "pawn") drawPiece(ctx, "pawn", "wood", b.col * cell, b.row * cell, cell);
+      if (b.kind === "wall") drawPiece(ctx, "pawn", "wood", b.col * cell, b.row * cell, cell);
     for (const q of queens) {
       if (q.row < 0 || q.row >= n || q.col < 0 || q.col >= n) continue;
       drawPiece(ctx, "queen", q.preplaced ? "blue" : "ebony", q.col * cell, q.row * cell, cell, { locked: q.preplaced });

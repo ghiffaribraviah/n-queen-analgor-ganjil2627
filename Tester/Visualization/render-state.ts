@@ -9,7 +9,7 @@ export interface BoardScene {
   n: number;
   /** The queens to draw. */
   queens: ReadonlyArray<Position>;
-  /** N strings of '.', 'H' or 'P'. */
+  /** N strings of '.', 'H' or 'W'. */
   terrain?: readonly string[];
   /** Queens that were on the board from the start: drawn locked. */
   preplaced?: ReadonlyArray<Position>;
@@ -29,7 +29,7 @@ export function buildRenderState(scene: BoardScene): RenderState {
   terrain?.forEach((row, r) => {
     for (let c = 0; c < row.length; c++) {
       if (row[c] === "H") blocked.push({ row: r, col: c, kind: "hole" });
-      else if (row[c] === "P") blocked.push({ row: r, col: c, kind: "pawn" });
+      else if (row[c] === "W") blocked.push({ row: r, col: c, kind: "wall" });
     }
   });
   return {
@@ -41,14 +41,14 @@ export function buildRenderState(scene: BoardScene): RenderState {
   };
 }
 
-/** What stands on a cell, in words: "queen", "preplaced queen", "queen in conflict", "pawn", "hole" or "empty". */
+/** What stands on a cell, in words: "queen", "preplaced queen", "queen in conflict", "wall", "hole" or "empty". */
 export function describeCell(scene: BoardScene, row: number, col: number): string {
   const { n, terrain } = scene;
   if (row < 0 || col < 0 || row >= n || col >= n) return "";
   const queen = scene.queens.some(([r, c]) => r === row && c === col);
   const kind = terrain?.[row]?.[col];
   if (kind === "H") return queen ? "hole with a queen on it" : "hole";
-  if (kind === "P") return queen ? "pawn with a queen on it" : "pawn";
+  if (kind === "W") return queen ? "wall with a queen on it" : "wall";
   if (!queen) return "empty";
   if (scene.preplaced?.some(([r, c]) => r === row && c === col)) return "preplaced queen";
   const inConflict = conflictingQueens(n, scene.queens, terrain).some(([r, c]) => r === row && c === col);

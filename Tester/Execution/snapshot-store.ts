@@ -65,7 +65,7 @@ export const omittedCount = (s: SnapshotState): number => s.total - s.entries.le
 
 /**
  * What is wrong with a snapshot, in words. A queen off the board or two queens on one cell mean the argument is
- * malformed; a queen on a hole or pawn is the solver's mistake. Neither stops the run.
+ * malformed; a queen on a hole or wall is the solver's mistake. Neither stops the run.
  */
 export function snapshotProblems(
   n: number,
@@ -83,7 +83,7 @@ export function snapshotProblems(
     seen.add(r * n + c);
     const t = terrain?.[r]?.[c];
     if (t === "H") problems.push(`The queen at (${r},${c}) is on a hole`);
-    if (t === "P") problems.push(`The queen at (${r},${c}) is on a pawn`);
+    if (t === "W") problems.push(`The queen at (${r},${c}) is on a wall`);
   }
   return problems;
 }

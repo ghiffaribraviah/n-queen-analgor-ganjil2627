@@ -17,7 +17,7 @@ std::vector<std::vector<int>> solvePreplaced(int n, const std::vector<std::pair<
 // Each solution lists all N rows. A board without a solution is answered with an empty list.
 std::vector<std::vector<int>> solveHoles(int n, const std::vector<std::string>& grid);
 
-// Walled: grid[r][c] is '.' for a free cell or 'P' for a pawn. No queen on a pawn, and attacks stop at it.
+// Walled: grid[r][c] is '.' for a free cell or 'W' for a wall (drawn as a pawn). No queen on a wall, and attacks stop at it.
 // Return every board that holds the largest possible number of queens, as lists of (row, column).
 std::vector<std::vector<std::pair<int, int>>> solveWalled(int n, const std::vector<std::string>& grid);
 

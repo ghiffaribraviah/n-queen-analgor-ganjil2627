@@ -17,7 +17,7 @@ export const RULE_LABEL: Record<Rule, string> = {
   column: "two queens share a column",
   diagonal: "two queens share a diagonal",
   preplaced: "a preplaced queen was moved or removed",
-  terrain: "a queen is on a hole or pawn, or the board's terrain changed",
+  terrain: "a queen is on a hole or wall, or the board's terrain changed",
   duplicate: "the same solution was returned more than once",
 };
 

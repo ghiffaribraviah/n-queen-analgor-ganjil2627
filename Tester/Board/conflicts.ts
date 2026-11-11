@@ -1,5 +1,5 @@
 // Which queens attack each other on a partial or complete board. Used to colour snapshots and reported boards.
-// Attacks pass through holes and stop at pawns, the same rule as validator.ts.
+// Attacks pass through holes and stop at walls, the same rule as validator.ts.
 import type { Position } from "./positions";
 
 /** Every attacking pair. Queens off the board are ignored. */
@@ -12,11 +12,11 @@ export function attackingPairs(
     ([r, c]) =>
       Number.isInteger(r) && Number.isInteger(c) && r >= 0 && c >= 0 && r < n && c < n,
   );
-  const pawnBetween = (r1: number, c1: number, r2: number, c2: number): boolean => {
+  const wallBetween = (r1: number, c1: number, r2: number, c2: number): boolean => {
     const dr = Math.sign(r2 - r1);
     const dc = Math.sign(c2 - c1);
     for (let r = r1 + dr, c = c1 + dc; r !== r2 || c !== c2; r += dr, c += dc) {
-      if (terrain?.[r]?.[c] === "P") return true;
+      if (terrain?.[r]?.[c] === "W") return true;
     }
     return false;
   };
@@ -27,7 +27,7 @@ export function attackingPairs(
       const [r2, c2] = inside[j]!;
       const aligned =
         r1 === r2 || c1 === c2 || Math.abs(r1 - r2) === Math.abs(c1 - c2);
-      if (aligned && !pawnBetween(r1, c1, r2, c2))
+      if (aligned && !wallBetween(r1, c1, r2, c2))
         pairs.push([inside[i]!, inside[j]!]);
     }
   }

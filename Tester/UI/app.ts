@@ -59,13 +59,13 @@ export async function mountApp(root: HTMLElement): Promise<void> {
     return fatal(root, "Solver/dist/manifest.json is from an older build, before solvers were found as Solver/<category>/<name>.cpp. Run npm run build:solvers.");
 
   // ---- state ---------------------------------------------------------------------------------
-  let cur = { n: 8, p: 0, k: 0, seed: 0 };
+  let cur = { n: 8, p: 0, blockedCount: 0, seed: 0 };
   let problemCase: ProblemCase = "normal";
   // The page opens on the solver of the first case, not on whichever solver the manifest lists first.
   let solver =
     solvers.find((s) => s.ok && s.id === DEFAULT_SOLVER[problemCase]) ?? solvers.find((s) => s.ok) ?? solvers[0]!;
   let debug = false;
-  /** Holes or pawns, as (row, column). The one source of truth: a draw from the seed fills it, the user may type it. */
+  /** Holes or walls, as (row, column). The one source of truth: a draw from the seed fills it, the user may type it. */
   let blocked: Array<[number, number]> = [];
   let preplaced: Array<[number, number]> = [];
   let terrain: Terrain | undefined;
@@ -157,7 +157,7 @@ export async function mountApp(root: HTMLElement): Promise<void> {
       problemCase === "holes"
         ? positionsToGrid(cur.n, blocked, "H")
         : walled()
-          ? positionsToGrid(cur.n, blocked, "P")
+          ? positionsToGrid(cur.n, blocked, "W")
           : undefined;
     preplaced =
       problemCase === "preplaced" ? generatePreplaced(cur.n, cur.p, cur.seed).queens : [];
@@ -172,22 +172,22 @@ export async function mountApp(root: HTMLElement): Promise<void> {
     on: {
       problem: (c) => {
         problemCase = c;
-        cur = { ...cur, p: 0, k: 0 };
+        cur = { ...cur, p: 0, blockedCount: 0 };
         blocked = [];
         apply();
       },
       resize: (n) => {
-        cur = { ...cur, n, p: 0, k: 0 };
+        cur = { ...cur, n, p: 0, blockedCount: 0 };
         blocked = [];
         apply();
       },
-      place: ({ n, p, k, seed }) => {
+      place: ({ n, p, blockedCount, seed }) => {
         if (problemCase === "preplaced") {
-          cur = { n, p, k: 0, seed };
+          cur = { n, p, blockedCount: 0, seed };
           blocked = [];
         } else {
-          cur = { n, p: 0, k, seed };
-          blocked = generateBlocked(n, k, seed, walled() ? "pawn" : "hole", {
+          cur = { n, p: 0, blockedCount, seed };
+          blocked = generateBlocked(n, blockedCount, seed, walled() ? "wall" : "hole", {
             solvable: problemCase === "holes", // drawn holes always leave a solution; typed ones are run as they are
           });
           panel.setPositions(formatPositions(blocked));
@@ -197,7 +197,7 @@ export async function mountApp(root: HTMLElement): Promise<void> {
       positions: (n, text) => {
         const parsed = parsePositions(text, n);
         if (!parsed.ok) return;
-        cur = { ...cur, n, p: 0, k: parsed.positions.length };
+        cur = { ...cur, n, p: 0, blockedCount: parsed.positions.length };
         blocked = parsed.positions;
         panel.setPositions(formatPositions(blocked));
         apply();

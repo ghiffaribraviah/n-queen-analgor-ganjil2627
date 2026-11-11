@@ -9,7 +9,7 @@
 // The host reads nq_heap_top() after nq_prepare and again after nq_solve, before nq_pack: packing allocates too, and that
 // is the tester's memory, not the solver's.
 //
-// Input bytes:  n | queen count (u16 LE) | (row, col) per queen | n*n grid chars ('.', 'H', 'P')
+// Input bytes:  n | queen count (u16 LE) | (row, col) per queen | n*n grid chars ('.', 'H' hole, 'W' wall)
 // Result bytes: see Tester/Board/solution-set.ts.
 #include <algorithm>
 #include <cstdint>

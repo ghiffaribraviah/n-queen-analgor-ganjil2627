@@ -1,17 +1,18 @@
-// Example solver for the Walled case: some cells hold pawns, and the goal is to place as many queens as possible.
+// Example solver for the Walled case: some cells hold walls, and the goal is to place as many queens as possible.
 // Brute force over every way to place queens. Read bruteforce-normal.cpp first: it explains how a solver is written, and
 // this file only explains what is different here.
 //
 // ---- The function --------------------------------------------------------------------------------------------------
-//   solveWalled(n, grid)    grid[r][c] is '.' for a free cell and 'P' for a pawn (row first, 0-based).
+//   solveWalled(n, grid)    grid[r][c] is '.' for a free cell and 'W' for a wall (row first, 0-based). The tester
+//                           draws a wall as a pawn.
 // Return EVERY board that holds the largest possible number of queens, each as a list of (row, column). The queens of a
 // board can be listed in any order. Boards with fewer queens than the best one you return are ignored.
 //
 // ---- The rules -----------------------------------------------------------------------------------------------------
-// * A queen cannot stand on a pawn, and pawns never attack.
-// * Two queens attack each other when they share a row, a column or a diagonal AND no pawn stands on a cell between
-//   them. So a pawn blocks an attack only if it lies exactly on the line between the two queens.
-// * Unlike the other cases, a row may hold any number of queens (or none), because a pawn splits it into separate
+// * A queen cannot stand on a wall, and walls never attack.
+// * Two queens attack each other when they share a row, a column or a diagonal AND no wall stands on a cell between
+//   them. So a wall blocks an attack only if it lies exactly on the line between the two queens.
+// * Unlike the other cases, a row may hold any number of queens (or none), because a wall splits it into separate
 //   stretches. That is why a solution is a list of positions and not one column per row.
 //
 // ---- The idea ------------------------------------------------------------------------------------------------------
@@ -57,10 +58,10 @@ class Search {
   bool attacks(int r1, int c1, int r2, int c2) const {
     const bool sameLine = r1 == r2 || c1 == c2 || std::abs(r1 - r2) == std::abs(c1 - c2);
     if (!sameLine) return false;
-    // Walk from one queen towards the other, one cell at a time. A pawn on the way blocks the attack.
+    // Walk from one queen towards the other, one cell at a time. A wall on the way blocks the attack.
     const int dr = sign(r2 - r1), dc = sign(c2 - c1);
     for (int r = r1 + dr, c = c1 + dc; r != r2 || c != c2; r += dr, c += dc) {
-      if (grid_[r][c] == 'P') return false;
+      if (grid_[r][c] == 'W') return false;
     }
     return true;
   }
@@ -73,7 +74,7 @@ class Search {
     }
     const int r = cell / n_, c = cell % n_;
 
-    if (grid_[r][c] != 'P') {
+    if (grid_[r][c] != 'W') {
       // Choice 1: a queen here, unless one that is already on the board attacks this cell.
       const Board::value_type* attacker = nullptr;
       for (const auto& queen : queens_) {
