@@ -318,4 +318,5 @@ Solver/
 
 ## Credits
 
-Early versions of the tester (the execution core, the renderer, the user interface and the benchmark of October and November 2026) and the first work on the Walled case were written together with hanya-manusia.
+- Ghiffari Bravia Hisham `https://github.com/ghiffaribraviah`
+- Muhammad Syafiq Romadhon `https://github.com/koniro-kishi`
