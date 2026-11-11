@@ -211,7 +211,6 @@ std::vector<std::vector<std::pair<int, int>>> solveWalled(int n, const std::vect
 - A solution of Normal, Pre-placed and Holes is a `std::vector<int>` of exactly N entries: the column of the queen in each row. It lists all N rows, preplaced ones included. A board without a solution is answered with an empty list.
 - A Walled board lists its queens in any order. On Walled you return **every board with the largest number of queens**; boards with fewer queens than the best one you return are ignored.
 - Return each solution once. A repeated solution is an Invalid Solution.
-- A wall on a Walled board is `'W'`. Earlier versions of this tester marked it with `'P'`: a Walled solver written for those must compare with `'W'` now, or it sees no walls and its answer is rejected.
 - A solver that does not define the function of the selected case ends as Execution Error, with the signature that was expected.
 
 ### Rules
